@@ -63,11 +63,6 @@ var (
 				`GoVersion = ".*"`: `GoVersion = "{{.StableVersion}}"`,
 			},
 		},
-		"deploy/kicbase/Dockerfile": {
-			Replace: map[string]string{
-				`golang:[0-9.]+`: `golang:{{.StableVersion}}`,
-			},
-		},
 		"deploy/addons/auto-pause/Dockerfile": {
 			Replace: map[string]string{
 				`golang:.* AS`: `golang:{{.StableVersion}} AS`,
@@ -138,7 +133,7 @@ func goVersions() (stable, k8sVersion string, err error) {
 }
 
 func updateGoHashFile(version string) error {
-	hashFilePath := "../deploy/iso/minikube-iso/go.hash"
+	hashFilePath := "../deploy/iso/minikube-iso/patches/go/go.hash"
 	b, err := os.ReadFile(hashFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to read hash file: %v", err)
