@@ -1,4 +1,4 @@
-# Copyright 2016 The Kubernetes Authors All rights reserved.
+# Copyright 2016 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.25.5 AS builder
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY ./ ./
-RUN GOOS=linux CGO_ENABLED=0 go build -o gvisor-addon cmd/gvisor/gvisor.go
+# Touching this file will trigger a new image build in Prow Staging https://testgrid.k8s.io/minikube-images
+# Last update Jan 16, 2026 3:19 PM
+FROM nginx:1.29.4-alpine-slim
 
-# Need an image with chroot
-FROM alpine:3
-RUN apk -U add ca-certificates
-COPY --from=builder /app/gvisor-addon /gvisor-addon
-CMD ["/gvisor-addon"]
+RUN apk update && apk upgrade && apk add bash
+COPY rootfs/bin/boot /bin/boot
+COPY rootfs/etc/nginx /etc/nginx
+CMD ["/bin/boot"]
